@@ -1,0 +1,30 @@
+substitutions:
+  _REGION: us-east1
+  _SERVICE: veara-backend
+  _IMAGE: us-docker.pkg.dev/YOUR_GCP_PROJECT_ID/YOUR_ARTIFACT_REPO/veara-backend:$SHORT_SHA
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ["build", "-t", "${_IMAGE}", "."]
+
+  - name: gcr.io/cloud-builders/docker
+    args: ["push", "${_IMAGE}"]
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - "${_SERVICE}"
+      - "--image"
+      - "${_IMAGE}"
+      - "--region"
+      - "${_REGION}"
+      - "--platform"
+      - managed
+
+images:
+  - "${_IMAGE}"
