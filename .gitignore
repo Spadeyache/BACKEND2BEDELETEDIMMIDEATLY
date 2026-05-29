@@ -1,0 +1,46 @@
+# Composer
+/vendor
+composer.phar
+
+# Node
+/node_modules
+/public/build
+/public/hot
+/public/storage
+
+# Laravel
+/storage/*.key
+/storage/pail
+/storage/logs/*.log
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/framework/testing/*
+!/storage/framework/cache/.gitignore
+!/storage/framework/sessions/.gitignore
+!/storage/framework/views/.gitignore
+!/storage/framework/testing/.gitignore
+
+# Env / secrets
+.env
+.env.backup
+.env.production
+.env.local
+.phpunit.result.cache
+*.pem
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+/.idea
+/.vscode
+/.fleet
+/.zed
+.phpactor.json
+
+# Other
+auth.json
+yarn-error.log
+npm-debug.log
