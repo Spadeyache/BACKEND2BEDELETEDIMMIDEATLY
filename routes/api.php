@@ -8,6 +8,8 @@ use App\Http\Controllers\API\V1\DesignController;
 use App\Http\Controllers\API\V1\PaymentController;
 use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\WebhookController;
+use App\Http\Controllers\API\V1\GarmentController;
+use App\Http\Controllers\API\V2\ProductController as ProductControllerV2;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\Auth\User\AuthenticationController;
@@ -53,7 +55,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
         Route::delete('/remove-from-cart/{id}', 'removeFromCart');
         Route::post('/update-quantity', 'updateQuantity');
     });
-    
+
     Route::prefix('v1/payment')->controller(PaymentController::class)->group(function () {
         Route::get('/checkout/{id}', 'index');
         Route::post('/checkout/initiate', 'checkout');
@@ -61,18 +63,30 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 
     Route::prefix('v1/designs')->controller(DesignController::class)->group(function () {
         Route::get('/', 'index');
+        Route::get('/variants/{id}', 'designVariants');
         Route::post('/save', 'saveDesign');
+        Route::get('/{id}', 'getDesignDetails');
+        Route::delete('/delete/{id}', 'deleteDesign');
     });
 
     Route::prefix('v1/products')->controller(ProductController::class)->group(function () {
         // get-all, get-one, catalog-data moved to the public group above — VEARA supports anonymous browsing.
         Route::get('show-just-designed-product/{id}', 'justDesignedProduct');
     });
-    
+
+});
+
+Route::prefix('v2/products')->controller(ProductControllerV2::class)->group(function () {
+    Route::get('get-all', 'index');
+    Route::get('get-one/{id}', 'productDetail');
+    Route::get('show-just-designed-product/{id}', 'justDesignedProduct');
 });
 
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+
+Route::get('v1/garments', [GarmentController::class, 'index']);
+Route::get('v1/garments/{id}', [GarmentController::class, 'show']);
 
 // Webhooks — NO auth middleware, but signature-verified
 Route::prefix('v1/webhooks')->controller(WebhookController::class)->group(function () {
