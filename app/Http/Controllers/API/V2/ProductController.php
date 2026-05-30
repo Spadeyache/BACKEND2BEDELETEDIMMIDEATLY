@@ -11,6 +11,7 @@ use App\Models\Garment;
 use App\Models\GarmentVariant;
 use App\Models\VearaProducts;
 use App\Traits\ApiResponse;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -106,6 +107,8 @@ class ProductController extends Controller
             ];
 
             return $this->sendResponse($data, 'Individual product details fetched.', 200);
+        } catch (ModelNotFoundException $exception) {
+            return $this->sendError('Product not found.', [], 404);
         } catch (\Exception $exception) {
             return $this->sendError($exception->getMessage(), [], 500);
         }
@@ -150,6 +153,8 @@ class ProductController extends Controller
             ];
 
             return $this->sendResponse($data, 'Individual product details fetched.', 200);
+        } catch (ModelNotFoundException $exception) {
+            return $this->sendError('Product not found.', [], 404);
         } catch (\Exception $exception) {
             return $this->sendError($exception->getMessage(), [], 500);
         }
