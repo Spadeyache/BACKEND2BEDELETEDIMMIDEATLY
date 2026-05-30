@@ -16,8 +16,7 @@ return new class extends Migration
             // $table->string('session_id')->index();
             $table->unsignedBigInteger('user_id');
             $table->double('shipping_cost')->default('10');
-            $table->string('status')->default('active');
-            // $table->enum('status', ['active', 'completed', 'abandoned']);
+            $table->enum('status', ['active', 'completed', 'abandoned']);
             $table->timestamps();
         });
     }

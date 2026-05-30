@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('design_elements', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('design_render_id');
+            $table->jsonb('design_labels');
             $table->string('type', 20);
             $table->string('content');
+            $table->string('placement'); // front_center / back_top / back_bottom
             $table->double('x_position');
             $table->double('y_position');
             $table->double('width');
@@ -23,8 +25,7 @@ return new class extends Migration
             $table->string('font_family');
             $table->float('font_size', 1);
             $table->string('color');
-            $table->string('status')->default('active');
-            // $table->enum('status', ['active', 'inactive']);
+            $table->enum('status', ['active', 'inactive']);
             $table->unsignedTinyInteger('created_by')->nullable();
             $table->unsignedTinyInteger('updated_by')->nullable();
             $table->timestamps();

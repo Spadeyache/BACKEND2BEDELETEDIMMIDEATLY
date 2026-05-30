@@ -159,6 +159,66 @@
             </div> --}}
             <!--end:Menu item-->
 
+            <div class="menu-item pt-5">
+                <div class="menu-content">
+                    <span class="fw-bold text-muted text-uppercase fs-7">Product & Order Management</span>
+                </div>
+            </div>
+
+            <!--begin:Menu item-->
+            <div class="menu-item">
+                <a class="menu-link {{ request()->routeIs('veara-product.*') ? 'active' : '' }}"
+                    href="{{ route('veara-product.index') }}">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-element-plus fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                            <span class="path5"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Veara Products</span>
+                </a>
+            </div>
+            <!--end:Menu item-->
+
+            <!--begin:Menu item - Garments accordion-->
+            <div data-kt-menu-trigger="click"
+                 class="menu-item menu-accordion {{ request()->routeIs('garment.*', 'garment-variant.*') ? 'show' : '' }}">
+                <span class="menu-link">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-row-vertical fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Garments</span>
+                    <span class="menu-arrow"></span>
+                </span>
+
+                <div class="menu-sub menu-sub-accordion"
+                     style="{{ request()->routeIs('garment.*', 'garment-variant.*') ? '' : 'display: none; overflow: hidden;' }}">
+
+                    <div class="menu-item mb-1">
+                        <a class="menu-link {{ request()->routeIs('garment.index') ? 'active' : '' }}"
+                           href="{{ route('garment.index') }}">
+                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                            <span class="menu-title">Garments List</span>
+                        </a>
+                    </div>
+
+                    <div class="menu-item mb-1">
+                        <a class="menu-link {{ request()->routeIs('garment-variant.index') ? 'active' : '' }}"
+                           href="{{ route('garment-variant.index') }}">
+                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                            <span class="menu-title">Garment Variants</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!--end:Menu item-->
+
             <div data-kt-menu-trigger="click"
                  class="menu-item menu-accordion {{ request()->routeIs('orders.*') ? 'show' : '' }}">
 

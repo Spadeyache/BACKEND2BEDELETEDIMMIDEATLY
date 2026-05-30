@@ -27,17 +27,19 @@ class DesignSaveRequest extends FormRequest
             // 'product_name' => 'required|string',
             // 'variant_title' => 'required',
             // 'variant_price' => 'required|numeric',
-            'printify_product_id'   => 'nullable',
+            // 'printify_product_id'   => 'nullable',
             'veara_product_id'      => 'nullable',
             'full_mockup'           => 'required|string',
 
             'front_image'           => 'nullable|string',
             'back_image'            => 'nullable|string',
-            'right_sleeve_image'    => 'nullable|string',
-            'left_sleeve_image'     => 'nullable|string',
-            'neck_image'            => 'nullable|string',
+            // 'right_sleeve_image'    => 'nullable|string',
+            // 'left_sleeve_image'     => 'nullable|string',
+            // 'neck_image'            => 'nullable|string',
             'print_files'           => 'nullable|array',
-            'print_files.*'         => 'nullable|string'
+            'print_files.*'         => 'nullable|string',
+            'front_elements'        => 'nullable|array',
+            'back_elements'         => 'nullable|array',
         ];
     }
 }

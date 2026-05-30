@@ -20,6 +20,8 @@ use App\Models\Design;
 use App\Models\DesignElements;
 use App\Models\DesignRender;
 use App\Models\Order;
+use App\Models\VearaProducts;
+use App\Models\GarmentVariant;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,50 +31,90 @@ class CartController extends Controller
 {
     use ApiResponse;
     //
-    public function addToCart(CartProductInfoRequest $request, PrintifyGetOneProduct $pgop)
+    public function addToCart(CartProductInfoRequest $request)
     {
         try {
             $user_id = auth()->id();
             $data = $request->validated();
 
-            $color_size = explode('/', $data['variant_title']);
-            $color = trim($color_size[0]);
-            $size = trim($color_size[1]);
-            
-            DB::beginTransaction();
-            
-            $cart = Cart::firstOrCreate(
-                ['user_id' => auth()->id(), 'status' => 'active'], // match both
-                ['user_id' => auth()->id(), 'status' => 'active']  // create with these if not found
-            );
-            
-            if(!$request->filled('front_image')) {
-                $printify_product = $pgop->oneProduct($data['printify_product_id']);
-                $printify_front_image = $printify_product['images'][0]['src'];
+            $veara_product_id = $data['veara_product_id'];
+            $garment_variant_id = $data['garment_variant_id'];
+            $quantity = $data['quantity'];
+
+            // 2. Look up the garment_variant by garment_variant_id
+            $garmentVariant = GarmentVariant::find($garment_variant_id);
+            if (!$garmentVariant || !$garmentVariant->is_enabled) {
+                return $this->sendError('Garment variant not found or disabled.', [], 404);
             }
 
-            $cart_items = CartItem::create([
-                'cart_id'               => $cart->id,
-                'design_id'             => $data['design_id'] ?? null,
-                'printify_product_id'   => $data['printify_product_id'],
-                'printify_variant_id'   => $data['printify_variant_id'],
-                'quantity'              => $data['quantity'],
-                'price'                 => $data['variant_price'],
-                'product_name'          => $data['product_name'],
-                'product_size'          => $size,
-                'product_color'         => $color,
-                'product_front_image'   => $data['front_image'] ?? $printify_front_image,
-                'created_by'            => $user_id
-            ]);
+            // 3. Look up the veara_product by veara_product_id
+            $vearaProduct = VearaProducts::find($veara_product_id);
+            if (!$vearaProduct) {
+                return $this->sendError('Veara product not found.', [], 404);
+            }
+
+            DB::beginTransaction();
+
+            $cart = Cart::firstOrCreate(
+                ['user_id' => $user_id, 'status' => 'active'],
+                ['user_id' => $user_id, 'status' => 'active']
+            );
+
+            // 4. Check if a cart_item already exists in that cart with the same veara_product_id AND garment_variant_id
+            $cartItem = CartItem::where('cart_id', $cart->id)
+                ->where('veara_product_id', $veara_product_id)
+                ->where('garment_variant_id', $garment_variant_id)
+                ->first();
+
+            if ($cartItem) {
+                $cartItem->quantity += $quantity;
+                $cartItem->save();
+            } else {
+                // Find latest Design of user for this Veara Product
+                $design = Design::where('user_id', $user_id)
+                    ->where('veara_product_id', $veara_product_id)
+                    ->latest()
+                    ->first();
+
+                $productFrontImage = null;
+                if ($design) {
+                    $designRender = DesignRender::where('design_id', $design->id)
+                        ->where('area_name', 'front')
+                        ->first();
+                    if ($designRender) {
+                        $productFrontImage = $designRender->image_url;
+                    }
+                }
+
+                // If not found, use front_mockup or veara_front from veara product
+                if (!$productFrontImage) {
+                    $productFrontImage = $vearaProduct->veara_front ?? $vearaProduct->front_mockup;
+                }
+
+                $cartItem = CartItem::create([
+                    'cart_id'             => $cart->id,
+                    'design_id'           => $design ? $design->id : null,
+                    'veara_product_id'    => $veara_product_id,
+                    'garment_variant_id'  => $garment_variant_id,
+                    'quantity'            => $quantity,
+                    'price'               => $garmentVariant->price_cents / 100,
+                    'product_name'        => $vearaProduct->title,
+                    'product_size'        => $garmentVariant->size,
+                    'product_color'       => $garmentVariant->color,
+                    'product_front_image' => $productFrontImage,
+                    'printify_product_id' => null,
+                    'created_by'          => $user_id,
+                ]);
+            }
 
             DB::commit();
 
             $datas = [
                 'cart' => new CartGetResource($cart),
-                'cart_items' => new CartItemGetResource($cart_items)
+                'cart_items' => new CartItemGetResource($cartItem)
             ];
-            
-            return $this->sendResponse($datas,'Product added to cart',200);
+
+            return $this->sendResponse($datas, 'Product added to cart', 200);
         } catch (\Exception $exception) {
             DB::rollBack();
             return $this->sendError($exception->getMessage(), [], 500);

@@ -8,7 +8,7 @@ class PrintifyGetAllProducts
     /**
      * Stock market price API
      */
-    protected string $base_url = 'https://api.printify.com/v1/shops/21494572/products.json';
+    protected string $base_url = 'https://api.printify.com/v1/shops/27482335/products.json';
 
     public function allProducts($page = 1, $type = null): array
     {

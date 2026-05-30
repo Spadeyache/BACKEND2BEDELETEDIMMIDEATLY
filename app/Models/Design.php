@@ -11,6 +11,8 @@ class Design extends Model
 
     protected $casts = [
         'print_files' => 'array',
+        'created_by' => 'integer',
+        'updated_by' => 'integer',
     ];
     
     public function user()
@@ -21,5 +23,10 @@ class Design extends Model
     public function designImages()
     {
         return $this->hasMany(DesignRender::class, 'design_id');
+    }
+
+    public function vearaProduct()
+    {
+        return $this->belongsTo(VearaProducts::class, 'veara_product_id');
     }
 }

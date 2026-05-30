@@ -37,9 +37,9 @@ class ProductController extends Controller
             $product_data = [
                 'products' => ProductGetResource::collection(collect($all_products['data'])),
                 'pagination' => [
-  			  'current_page' => $all_products['current_page'] ?? (int) $page,
-  			  'last_page' => $all_products['last_page'] ?? 1,
-   			  'per_page' => $all_products['per_page'] ?? 50,
+                    'current_page' => $all_products['current_page'],
+                    'last_page' => $all_products['last_page'],
+                    'per_page' => $all_products['per_page'] ?? 50,
                 ]
             ];
             return $this->sendResponse($product_data,'All products from printify fetched.',200);
