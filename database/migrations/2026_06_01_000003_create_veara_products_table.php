@@ -12,7 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
+        if ($this->isPostgres()) {
+            DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
+        }
 
         Schema::create('design_catalog_products', function (Blueprint $table) {
             $table->id();
@@ -43,6 +45,7 @@ return new class extends Migration
             $table->string('review_source')->nullable();
             $table->boolean('vectorized')->default(false);
             $table->string('embedding_model')->nullable();
+            $table->text('embedding')->nullable();
             $table->timestamp('labeled_at')->nullable();
             $table->timestamp('imported_at')->nullable();
             $table->string('status')->default('draft');
@@ -53,8 +56,10 @@ return new class extends Migration
             $table->index('source_domain', 'design_catalog_products_source_domain_idx');
         });
 
-        DB::statement('ALTER TABLE design_catalog_products ADD COLUMN embedding vector(160)');
-        DB::statement('CREATE INDEX design_catalog_products_embedding_hnsw_idx ON design_catalog_products USING hnsw (embedding vector_cosine_ops)');
+        if ($this->isPostgres()) {
+            DB::statement('ALTER TABLE design_catalog_products ALTER COLUMN embedding TYPE vector(160) USING embedding::vector');
+            DB::statement('CREATE INDEX design_catalog_products_embedding_hnsw_idx ON design_catalog_products USING hnsw (embedding vector_cosine_ops)');
+        }
     }
 
     /**
@@ -63,5 +68,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('design_catalog_products');
+    }
+
+    private function isPostgres(): bool
+    {
+        return Schema::getConnection()->getDriverName() === 'pgsql';
     }
 };

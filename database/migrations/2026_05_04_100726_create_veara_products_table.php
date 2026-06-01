@@ -12,7 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
+        if ($this->isPostgres()) {
+            DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
+        }
 
         Schema::create('veara_products', function (Blueprint $table) {
             $table->id();
@@ -33,11 +35,13 @@ return new class extends Migration
             // $table->string('embedding'); // vector type, need POSTGRE!!
             $table->string('embedding_model');
             $table->dateTime('labeled_at');
+            $table->text('embedding')->nullable();
             $table->timestamps();
         });
 
-        // Add vector column separately via raw statement
-        DB::statement('ALTER TABLE veara_products ADD COLUMN embedding vector(768)');
+        if ($this->isPostgres()) {
+            DB::statement('ALTER TABLE veara_products ALTER COLUMN embedding TYPE vector(768) USING embedding::vector');
+        }
     }
 
     /**
@@ -46,5 +50,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('veara_products');
+    }
+
+    private function isPostgres(): bool
+    {
+        return Schema::getConnection()->getDriverName() === 'pgsql';
     }
 };
