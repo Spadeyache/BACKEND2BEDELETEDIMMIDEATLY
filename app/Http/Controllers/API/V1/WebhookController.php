@@ -47,21 +47,23 @@ class WebhookController extends Controller
             }
 
             $shipping        = cache()->get("order_shipping_{$order->id}");
-            // $printifyOrderId = $printify->createOrder($order, $shipping);
+            $printify        = new PrintifyService();
 
             DB::beginTransaction();
 
             try {
                 $cart = Cart::where('user_id', $userId)->where('status', 'active')->first();
-                $cart->update([
-                    'status' => 'completed'
-                ]);
+                if ($cart) {
+                    $cart->update(['status' => 'completed']);
+                }
+
+                // Create the order on Printify and store the returned ID
+                $printifyOrderId = $printify->createOrder($order->load('order_item.garmentVariant.garment', 'user'), $shipping);
 
                 $order->update([
-                    'stripe_payment_id' => $session->id,
-                    // 'stripe_payment_id' => $session->payment_intent, // Stripe still gives you this
-                    // 'printify_order_id' => $printifyOrderId,
-                    'status'            => 'paid',
+                    'stripe_payment_id'  => $session->id,
+                    'printify_order_id'  => $printifyOrderId,
+                    'status'             => 'paid',
                 ]);
 
                 cache()->forget("order_shipping_{$order->id}");

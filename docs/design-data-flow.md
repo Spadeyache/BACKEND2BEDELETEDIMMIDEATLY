@@ -19,8 +19,8 @@ veara-design scraper
   -> veara-backend PostgreSQL
        design_label_groups
        design_labels
-       veara_products
-       veara_product_labels
+       design_catalog_products
+       design_catalog_product_labels
   -> Laravel API
   -> veara-website
 ```
@@ -51,6 +51,11 @@ veara-design scraper
 
 ## Backend Tables
 
+Migration note:
+
+- Fresh databases create app products in `veara_products` and scraped/labeled catalog products in `design_catalog_products`.
+- Existing local databases that already used `veara_products` for scraped/labeled catalog data are moved by `2026_05_04_090000_move_legacy_design_catalog_products_table.php` before the remote app product migrations run.
+
 ### `design_label_groups`
 
 One row per label family.
@@ -76,7 +81,7 @@ Examples:
 
 This is the backend's unified label list. Admin and website filters should use this table instead of hard-coded frontend lists.
 
-### `veara_products`
+### `design_catalog_products`
 
 The backend-owned product format for scraped/labeled designs.
 
@@ -102,9 +107,9 @@ Important fields:
 - `embedding`
 - `status`
 
-### `veara_product_labels`
+### `design_catalog_product_labels`
 
-Join table between `veara_products` and `design_labels`.
+Join table between `design_catalog_products` and `design_labels`.
 
 Use this for filters and future recommendation/ranking features.
 
@@ -116,8 +121,11 @@ Do not mix these meanings:
 design_id
   Laravel custom design ID from designs.id
 
+design_catalog_product_id
+  Backend design catalog product ID from design_catalog_products.id
+
 veara_product_id
-  Backend product ID from veara_products.id
+  App product ID from veara_products.id, used by the garment/product admin and cart flow
 
 printify_product_id
   Printify product ID
@@ -127,7 +135,7 @@ If a user customizes a scraped design, store both:
 
 ```txt
 designs.id           -> custom user design
-designs.veara_product_id -> original VEARA scraped/labeled product
+designs.design_catalog_product_id -> original scraped/labeled design catalog product
 ```
 
 ## Commands

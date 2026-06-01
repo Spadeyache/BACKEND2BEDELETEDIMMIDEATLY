@@ -3,162 +3,214 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-    <div class="content fs-6 d-flex flex-column flex-column-fluid veara-dashboard" id="kt_content">
+    <!--begin::Content-->
+    <div class="content fs-6 d-flex flex-column flex-column-fluid" id="kt_content">
+        <!--begin::Toolbar-->
         <div class="toolbar" id="kt_toolbar">
-            <div class="container-fluid d-flex flex-stack flex-wrap flex-sm-nowrap">
+            <div class=" container-fluid  d-flex flex-stack flex-wrap flex-sm-nowrap">
+                <!--begin::Info-->
                 <div class="d-flex flex-column align-items-start justify-content-center flex-wrap me-2">
-                    <div class="veara-kicker">Operations Console</div>
-                    <h1 class="veara-page-title my-1 fs-2">Dashboard</h1>
+                    <!--begin::Title-->
+                    <h1 class="text-dark fw-bold my-1 fs-2">
+                        Dashboard </h1>
+                    <!--end::Title-->
+
+                    <!--begin::Breadcrumb-->
                     <ul class="breadcrumb fw-semibold fs-base my-1">
                         <li class="breadcrumb-item text-muted">
-                            <a href="{{ route('dashboard') }}" class="text-muted text-hover-primary">Home</a>
+                            <a href="" class="text-muted text-hover-primary">Home </a>
                         </li>
-                        <li class="breadcrumb-item text-dark">Overview</li>
+
+                        <li class="breadcrumb-item text-dark"></li>
+
                     </ul>
+                    <!--end::Breadcrumb-->
                 </div>
+                <!--end::Info-->
+
             </div>
         </div>
+        <!--end::Toolbar-->
 
+        <!--begin::Post-->
         <div class="post fs-6 d-flex flex-column-fluid" id="kt_post">
-            <div class="container-xxl">
-                <section class="veara-hero">
-                    <div>
-                        <div class="veara-kicker">Admin Activity</div>
-                        <h1>Keep the Veara backend moving with a calmer command center.</h1>
-                        <p>Track the core queues, revenue checkpoints, and operational tasks from one report-inspired surface.</p>
-                    </div>
-                    <span class="veara-status-badge">Live Workspace</span>
-                </section>
+            <!--begin::Container-->
+            <div class=" container-xxl ">
 
-                <section class="veara-metric-grid mb-6">
-                    <article class="veara-metric">
-                        <div class="veara-metric-label">Current Orders</div>
-                        <div class="veara-metric-value">237</div>
-                        <div class="veara-metric-note">30 active, 45 completed, 25 waiting.</div>
-                    </article>
-                    <article class="veara-metric veara-metric-accent">
-                        <div class="veara-metric-label">Project Finance</div>
-                        <div class="veara-metric-value">$3,290</div>
-                        <div class="veara-metric-note">Average project budget is trending up.</div>
-                    </article>
-                    <article class="veara-metric">
-                        <div class="veara-metric-label">Support Inbox</div>
-                        <div class="veara-metric-value">18</div>
-                        <div class="veara-metric-note">New contact requests to triage.</div>
-                    </article>
-                    <article class="veara-metric">
-                        <div class="veara-metric-label">System Readiness</div>
-                        <div class="veara-metric-value">92%</div>
-                        <div class="veara-metric-note">Stripe and Printify settings are configured.</div>
-                    </article>
-                </section>
+                <!--begin:row-->
+                <div class="row gx-6 gx-xl-9">
+                    <div class="col-lg-6 col-xxl-4">
+                        <!--begin::Card-->
+                        <div class="card h-100">
+                            <!--begin::Card body-->
+                            <div class="card-body p-9">
+                                <!--begin::Heading-->
+                                <div class="fs-2hx fw-bold">237</div>
+                                <div class="fs-4 fw-semibold text-gray-400 mb-7">Current Projects</div>
+                                <!--end::Heading-->
 
-                <div class="row g-6 g-xl-9">
-                    <div class="col-xl-5">
-                        <section class="veara-panel">
-                            <div class="veara-panel-head">
-                                <div class="veara-panel-label">Workstream</div>
-                                <span class="veara-panel-tag">Progress</span>
-                            </div>
-                            <div class="veara-panel-body">
-                                <div class="d-flex flex-wrap align-items-center gap-5 mb-5">
-                                    <div class="d-flex flex-center h-100px w-100px">
-                                        <canvas id="kt_project_list_chart" width="100" height="100"></canvas>
+                                <!--begin::Wrapper-->
+                                <div class="d-flex flex-wrap">
+                                    <!--begin::Chart-->
+                                    <div class="d-flex flex-center h-100px w-100px me-9 mb-5">
+                                        <canvas id="kt_project_list_chart" width="100" height="100"
+                                            style="display: block; box-sizing: border-box; height: 100px; width: 100px;"></canvas>
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <div class="veara-metric-label">Order Flow</div>
-                                        <div class="veara-metric-value fs-1">50%</div>
-                                        <div class="veara-progress mt-3" aria-label="Order flow 50% complete">
-                                            <span style="width: 50%"></span>
+                                    <!--end::Chart-->
+
+                                    <!--begin::Labels-->
+                                    <div class="d-flex flex-column justify-content-center flex-row-fluid pe-11 mb-5">
+                                        <!--begin::Label-->
+                                        <div class="d-flex fs-6 fw-semibold align-items-center mb-3">
+                                            <div class="bullet bg-primary me-3"></div>
+                                            <div class="text-gray-400">Active</div>
+                                            <div class="ms-auto fw-bold text-gray-700">30</div>
                                         </div>
+                                        <!--end::Label-->
+
+                                        <!--begin::Label-->
+                                        <div class="d-flex fs-6 fw-semibold align-items-center mb-3">
+                                            <div class="bullet bg-success me-3"></div>
+                                            <div class="text-gray-400">Completed</div>
+                                            <div class="ms-auto fw-bold text-gray-700">45</div>
+                                        </div>
+                                        <!--end::Label-->
+
+                                        <!--begin::Label-->
+                                        <div class="d-flex fs-6 fw-semibold align-items-center">
+                                            <div class="bullet bg-gray-300 me-3"></div>
+                                            <div class="text-gray-400">Yet to start</div>
+                                            <div class="ms-auto fw-bold text-gray-700">25</div>
+                                        </div>
+                                        <!--end::Label-->
                                     </div>
+                                    <!--end::Labels-->
                                 </div>
-
-                                <ul class="veara-list">
-                                    <li>
-                                        <span class="veara-list-mark">A</span>
-                                        <div class="flex-grow-1">
-                                            <div class="fw-bold text-dark">Active orders</div>
-                                            <div class="text-muted">30 currently moving through fulfillment.</div>
-                                        </div>
-                                        <div class="fw-bold text-dark">30</div>
-                                    </li>
-                                    <li>
-                                        <span class="veara-list-mark">C</span>
-                                        <div class="flex-grow-1">
-                                            <div class="fw-bold text-dark">Completed</div>
-                                            <div class="text-muted">45 items closed out cleanly.</div>
-                                        </div>
-                                        <div class="fw-bold text-dark">45</div>
-                                    </li>
-                                    <li>
-                                        <span class="veara-list-mark">Q</span>
-                                        <div class="flex-grow-1">
-                                            <div class="fw-bold text-dark">Queued</div>
-                                            <div class="text-muted">25 need the next operational action.</div>
-                                        </div>
-                                        <div class="fw-bold text-dark">25</div>
-                                    </li>
-                                </ul>
+                                <!--end::Wrapper-->
                             </div>
-                        </section>
+                            <!--end::Card body-->
+                        </div>
+                        <!--end::Card-->
                     </div>
 
-                    <div class="col-xl-4">
-                        <section class="veara-panel">
-                            <div class="veara-panel-head">
-                                <div class="veara-panel-label">Finance Notes</div>
-                                <span class="veara-panel-tag">Snapshot</span>
-                            </div>
-                            <div class="veara-panel-body">
-                                <div class="veara-timeline">
-                                    <div class="veara-timeline-item">
-                                        <div class="veara-timeline-title">Average project budget</div>
-                                        <div class="veara-timeline-copy">$6,570 is the current benchmark for planning checks.</div>
+                    <div class="col-lg-6 col-xxl-4">
+                        <!--begin::Budget-->
+                        <div class="card  h-100">
+                            <div class="card-body p-9">
+                                <div class="fs-2hx fw-bold">$3,290.00</div>
+                                <div class="fs-4 fw-semibold text-gray-400 mb-7">Project Finance</div>
+
+                                <div class="fs-6 d-flex justify-content-between mb-4">
+                                    <div class="fw-semibold">Avg. Project Budget</div>
+                                    <div class="d-flex fw-bold">
+                                        <i class="ki-duotone ki-arrow-up-right fs-3 me-1 text-success"><span
+                                                class="path1"></span><span class="path2"></span></i> $6,570
                                     </div>
-                                    <div class="veara-timeline-item">
-                                        <div class="veara-timeline-title">Lowest project check</div>
-                                        <div class="veara-timeline-copy">$408 is the low-water mark to monitor for margin drift.</div>
+                                </div>
+
+                                <div class="separator separator-dashed"></div>
+
+                                <div class="fs-6 d-flex justify-content-between my-4">
+                                    <div class="fw-semibold">Lowest Project Check</div>
+
+                                    <div class="d-flex fw-bold">
+                                        <i class="ki-duotone ki-arrow-down-left fs-3 me-1 text-danger"><span
+                                                class="path1"></span><span class="path2"></span></i> $408
                                     </div>
-                                    <div class="veara-timeline-item">
-                                        <div class="veara-timeline-title">Ambassador page</div>
-                                        <div class="veara-timeline-copy">$920 is tracking upward and ready for review.</div>
+                                </div>
+
+                                <div class="separator separator-dashed"></div>
+
+                                <div class="fs-6 d-flex justify-content-between mt-4">
+                                    <div class="fw-semibold">Ambassador Page</div>
+
+                                    <div class="d-flex fw-bold">
+                                        <i class="ki-duotone ki-arrow-up-right fs-3 me-1 text-success"><span
+                                                class="path1"></span><span class="path2"></span></i> $920
                                     </div>
                                 </div>
                             </div>
-                        </section>
+                        </div>
+                        <!--end::Budget-->
                     </div>
 
-                    <div class="col-xl-3">
-                        <section class="veara-panel">
-                            <div class="veara-panel-head">
-                                <div class="veara-panel-label">Priority</div>
-                                <span class="veara-panel-tag">Today</span>
-                            </div>
-                            <div class="veara-panel-body">
-                                <div class="veara-kicker">In Progress</div>
-                                <h2 class="fs-3 fw-bold text-dark mb-2">Fitness App</h2>
-                                <p class="mb-5 text-muted">CRM application work to improve HR efficiency.</p>
+                    <div class="col-md-6 col-xl-4">
 
-                                <div class="border border-dashed rounded p-4 mb-4">
-                                    <div class="fw-bold text-dark">Feb 21, 2024</div>
-                                    <div class="text-muted">Due date</div>
+                        <!--begin::Card-->
+                        <div class="card border-hover-primary ">
+                            <!--begin::Card header-->
+                            <div class="card-header border-0 pt-9">
+                                <!--begin::Card Title-->
+                                <div class="card-title m-0">
+                                    <!--begin::Avatar-->
+                                    <div class="symbol symbol-50px w-50px bg-light">
+                                        <img src="{{ asset('backend/assets') ."/media/svg/brand-logos/plurk.svg" }}" alt="image" class="p-3">
+                                    </div>
+                                    <!--end::Avatar-->
                                 </div>
-                                <div class="border border-dashed rounded p-4 mb-5">
-                                    <div class="fw-bold text-dark">$284,900.00</div>
-                                    <div class="text-muted">Budget</div>
-                                </div>
+                                <!--end::Car Title-->
 
-                                <div class="veara-progress" aria-label="Priority project 50% complete">
-                                    <span style="width: 50%"></span>
+                                <!--begin::Card toolbar-->
+                                <div class="card-toolbar">
+                                    <span class="badge badge-light-primary fw-bold me-auto px-4 py-3">In Progress</span>
                                 </div>
+                                <!--end::Card toolbar-->
                             </div>
-                        </section>
+                            <!--end:: Card header-->
+
+                            <!--begin:: Card body-->
+                            <div class="card-body p-9">
+                                <!--begin::Name-->
+                                <div class="fs-3 fw-bold text-dark">
+                                    Fitnes App </div>
+                                <!--end::Name-->
+
+                                <!--begin::Description-->
+                                <p class="text-gray-400 fw-semibold fs-5 mt-1 mb-7">
+                                    CRM App application to HR efficiency </p>
+                                <!--end::Description-->
+
+                                <!--begin::Info-->
+                                <div class="d-flex flex-wrap mb-5">
+                                    <!--begin::Due-->
+                                    <div
+                                        class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-7 mb-3">
+                                        <div class="fs-6 text-gray-800 fw-bold">Feb 21, 2024</div>
+                                        <div class="fw-semibold text-gray-400">Due Date</div>
+                                    </div>
+                                    <!--end::Due-->
+
+                                    <!--begin::Budget-->
+                                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 mb-3">
+                                        <div class="fs-6 text-gray-800 fw-bold">$284,900.00</div>
+                                        <div class="fw-semibold text-gray-400">Budget</div>
+                                    </div>
+                                    <!--end::Budget-->
+                                </div>
+                                <!--end::Info-->
+
+                                <!--begin::Progress-->
+                                <div class="h-4px w-100 bg-light mb-5" data-bs-toggle="tooltip"
+                                    aria-label="This project 50% completed"
+                                    data-bs-original-title="This project 50% completed" data-kt-initialized="1">
+                                    <div class="bg-primary rounded h-4px" role="progressbar" style="width: 50%"
+                                        aria-valuenow=" 50" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <!--end::Progress-->
+                            </div>
+                            <!--end:: Card body-->
+                        </div>
+                        <!--end::Card-->
                     </div>
                 </div>
+                <!--end:row-->
+
             </div>
+            <!--end::Container-->
         </div>
+        <!--end::Post-->
     </div>
+    <!--end::Content-->
 
     @push('script')
     @endpush

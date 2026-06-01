@@ -20,11 +20,6 @@ return new class extends Migration
             $table->boolean('read')->default(0);
             $table->timestamps();
         });
-
-        Schema::table('users', function (Blueprint $table) {
-            //
-            $table->string('phone')->after('avatar');
-        });
     }
 
     /**
@@ -33,10 +28,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('contact_us');
-
-        Schema::table('users', function (Blueprint $table) {
-            //
-            $table->dropColumn('phone');
-        });
     }
 };

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\DesignCatalog\DesignLabelGroupResource;
 use App\Http\Resources\Api\V1\DesignCatalog\VearaProductResource;
+use App\Models\DesignCatalogProduct;
 use App\Models\DesignLabelGroup;
-use App\Models\VearaProduct;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -17,7 +17,7 @@ class DesignCatalogController extends Controller
     public function products(Request $request)
     {
         try {
-            $query = VearaProduct::query()
+            $query = DesignCatalogProduct::query()
                 ->with('labels.group')
                 ->where('status', $request->get('status', 'active'));
 
@@ -62,7 +62,7 @@ class DesignCatalogController extends Controller
     public function product(string $id)
     {
         try {
-            $product = VearaProduct::with('labels.group')->findOrFail($id);
+            $product = DesignCatalogProduct::with('labels.group')->findOrFail($id);
 
             return $this->sendResponse(new VearaProductResource($product), 'Veara product retrieved successfully', 200);
         } catch (\Exception $exception) {

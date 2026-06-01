@@ -46,4 +46,4 @@ Artisan::command('veara:import-products {--connection=veara_design_source} {--li
 
     $this->info("Read {$result['read']} labeled products.");
     $this->info("Imported {$result['imported']}, updated {$result['updated']}, attached {$result['attached_labels']} labels.");
-})->purpose('Import labeled scraped designs into backend veara_products');
+})->purpose('Import labeled scraped designs into backend design_catalog_products');

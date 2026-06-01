@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Helpers\PrintifyService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Payment\CheckoutRequest;
 use App\Http\Resources\Api\V1\Auth\UserResource;
 use App\Http\Resources\Api\V1\Payment\CartDetailsResource;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Design;
+use App\Models\GarmentVariant;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Traits\ApiResponse;
@@ -53,14 +56,14 @@ class PaymentController extends Controller
     {
         try {
             $user_id = auth()->id();
-            $request->validated();
+            $data    = $request->validated();
+            $items   = $data['items'];
 
-            $items      = $request->input('items');
             $totalPrice = collect($items)->sum(fn($i) => $i['price'] * $i['quantity']);
+            $stripe     = new StripeClient(config('services.stripe.secret'));
+            $printify   = new PrintifyService();
 
-            $stripe = new StripeClient(config('services.stripe.secret'));
-
-            // Build line items for Stripe Checkout
+            // Build Stripe line items
             $lineItems = collect($items)->map(fn($i) => [
                 'price_data' => [
                     'currency'     => 'usd',
@@ -71,24 +74,43 @@ class PaymentController extends Controller
             ])->toArray();
 
             DB::beginTransaction();
-            // Create the order first to get an ID for metadata
+
             $order = Order::create([
-                'user_id'     => $user_id,
-                'total_price' => $totalPrice,
-                'status'      => 'pending',
-                'created_by'  => $user_id,
+                'user_id'           => $user_id,
+                'stripe_payment_id' => '',
+                'total_price'       => $totalPrice,
+                'status'            => 'pending',
+                'created_by'        => $user_id,
             ]);
 
             foreach ($items as $item) {
+                $design  = isset($item['design_id']) ? Design::findOrFail($item['design_id']) : null;
+                $variant = GarmentVariant::with('garment')->findOrFail($item['garment_variant_id']);
+
+                $printifyProductId = null;
+                $printifyVariantId = $variant->printify_variant_id;
+
+                if ($design) {
+                    // If the design doesn't have a Printify product yet, create one now
+                    if (empty($design->printify_product_id)) {
+                        $printifyProductId = $printify->createProduct($design, $variant);
+                        $design->update(['printify_product_id' => $printifyProductId]);
+                    } else {
+                        $printifyProductId = $design->printify_product_id;
+                    }
+                }
+
                 OrderItem::create([
                     'order_id'            => $order->id,
-                    'design_id'           => $item['design_id'],
-                    'printify_product_id' => $item['printify_product_id'],
-                    'printify_variant_id' => $item['printify_variant_id'],
+                    'design_id'           => $item['design_id'] ?? null,
+                    'veara_product_id'    => $item['veara_product_id'] ?? null,
+                    'garment_variant_id'  => $item['garment_variant_id'],
+                    'printify_product_id' => $printifyProductId,
+                    'printify_variant_id' => $printifyVariantId,
                     'quantity'            => $item['quantity'],
                     'price'               => $item['price'],
-                    'image'               => $item['image'],
-                    'created_by'          => $request->user()->id,
+                    'image'               => $item['image'] ?? null,
+                    'created_by'          => $user_id,
                 ]);
             }
 
@@ -101,19 +123,18 @@ class PaymentController extends Controller
                 'metadata'             => ['order_id' => $order->id, 'user_id' => $user_id],
             ]);
 
-            // Save session ID back to the order
             $order->update(['stripe_session_id' => $session->id]);
 
-            // Cache shipping for use in webhook
+            // Cache shipping for use in the Stripe webhook
             cache()->put("order_shipping_{$order->id}", $request->input('shipping'), now()->addHours(2));
 
             DB::commit();
 
-            $data = [
+            return $this->sendResponse([
                 'checkout_url' => $session->url,
-                'order_id'     => $order->id
-            ];
-            return $this->sendResponse($data, 'Order created successfully',200);
+                'order_id'     => $order->id,
+            ], 'Order created successfully', 200);
+
         } catch (\Exception $exception) {
             DB::rollBack();
             return $this->sendError($exception->getMessage(), [], 500);

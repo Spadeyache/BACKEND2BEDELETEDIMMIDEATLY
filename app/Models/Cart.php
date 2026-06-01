@@ -6,8 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cart extends Model
 {
-    //
     protected $guarded = [];
+
+    protected $casts = [
+        'shipping_cost' => 'float',
+    ];
     
     public function user()
     {

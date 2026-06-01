@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Web\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\DesignCatalogProduct;
 use App\Models\DesignLabelGroup;
-use App\Models\VearaProduct;
 use Illuminate\Http\Request;
 
 class DesignCatalogController extends Controller
@@ -13,7 +13,7 @@ class DesignCatalogController extends Controller
     {
         $status = $request->get('status', 'draft');
 
-        $query = VearaProduct::query()
+        $query = DesignCatalogProduct::query()
             ->with(['labels.group'])
             ->when($status !== 'all', fn ($builder) => $builder->where('status', $status))
             ->when($request->filled('design_type'), fn ($builder) => $builder->where('design_type', $request->design_type))
@@ -39,10 +39,10 @@ class DesignCatalogController extends Controller
             ->keyBy('key');
 
         $stats = [
-            'total' => VearaProduct::count(),
-            'draft' => VearaProduct::where('status', 'draft')->count(),
-            'active' => VearaProduct::where('status', 'active')->count(),
-            'vectorized' => VearaProduct::where('vectorized', true)->count(),
+            'total' => DesignCatalogProduct::count(),
+            'draft' => DesignCatalogProduct::where('status', 'draft')->count(),
+            'active' => DesignCatalogProduct::where('status', 'active')->count(),
+            'vectorized' => DesignCatalogProduct::where('vectorized', true)->count(),
         ];
 
         return view('backend.layout.DesignCatalog.index', [

@@ -1,9 +1,7 @@
-.git
-.github
 node_modules
 vendor
-storage/logs/*
-bootstrap/cache/*
+.git
 .env
-.env.*
-!.env.example
+storage/logs/*
+tests
+README.md

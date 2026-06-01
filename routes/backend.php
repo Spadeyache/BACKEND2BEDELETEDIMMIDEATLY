@@ -14,6 +14,9 @@ use App\Http\Controllers\Web\Backend\RoleController;
 use App\Http\Controllers\Web\Backend\SettingController;
 use App\Http\Controllers\Web\Backend\UserController;
 use App\Http\Controllers\Web\Backend\UserRoleManagementController;
+use App\Http\Controllers\Web\Backend\VearaProductController;
+use App\Http\Controllers\Web\Backend\GarmentController;
+use App\Http\Controllers\Web\Backend\GarmentVariantController;
 
 //! dashboard
 Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
@@ -51,6 +54,37 @@ Route::controller(UserController::class)->group(function () {
     Route::put('/user/{id}/update',  'update')->name('user.update');
     Route::delete('/user/{id}/delete',  'delete')->name('user.delete');
 });
+
+//! veara products
+Route::controller(VearaProductController::class)->group(function () {
+    Route::get('/veara-product', 'index')->name('veara-product.index');
+    Route::post('/veara-product', 'store')->name('veara-product.store');
+    Route::get('/veara-product/{id}/edit',  'edit')->name('veara-product.edit');
+    Route::put('/veara-product/{id}/update',  'update')->name('veara-product.update');
+    Route::delete('/veara-product/{id}/delete',  'delete')->name('veara-product.delete');
+});
+
+//! garments
+Route::controller(GarmentController::class)->group(function () {
+    Route::get('/garment', 'index')->name('garment.index');
+    Route::post('/garment', 'store')->name('garment.store');
+    Route::get('/garment/{id}/edit', 'edit')->name('garment.edit');
+    Route::put('/garment/{id}/update', 'update')->name('garment.update');
+    Route::delete('/garment/{id}/delete', 'delete')->name('garment.delete');
+    Route::get('/garment/blueprint/{id}/print-providers', 'getPrintProviders')->name('garment.print-providers');
+});
+
+//! garment variants
+Route::controller(GarmentVariantController::class)->group(function () {
+    Route::get('/garment-variant', 'index')->name('garment-variant.index');
+    Route::post('/garment-variant', 'store')->name('garment-variant.store');
+    Route::get('/garment-variant/{id}/edit', 'edit')->name('garment-variant.edit');
+    Route::put('/garment-variant/{id}/update', 'update')->name('garment-variant.update');
+    Route::delete('/garment-variant/{id}/delete', 'delete')->name('garment-variant.delete');
+    Route::get('/garment-variant/{id}/printify-variants', 'getPrintifyVariants')->name('garment-variant.printify-variants');
+});
+
+Route::get('/design-catalog', [DesignCatalogController::class, 'index'])->name('design-catalog.index');
 
 
 //! Route for role management
@@ -90,8 +124,6 @@ Route::prefix('/orders')->controller(OrdersController::class)->group( function (
     Route::get('/{id}', 'details')->name('orders.details');
     Route::get('/{id}/data', 'detailsData')->name('orders.details.data');
 });
-
-Route::get('/design-catalog', [DesignCatalogController::class, 'index'])->name('design-catalog.index');
 
 Route::prefix('/contact-us')->controller(ContactUsController::class)->group( function () {
     Route::get('/', 'index')->name('contact_us.index');

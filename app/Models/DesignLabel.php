@@ -15,6 +15,6 @@ class DesignLabel extends Model
 
     public function vearaProducts()
     {
-        return $this->belongsToMany(VearaProduct::class, 'veara_product_labels');
+        return $this->belongsToMany(DesignCatalogProduct::class, 'design_catalog_product_labels');
     }
 }

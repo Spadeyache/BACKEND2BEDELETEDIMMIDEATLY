@@ -22,20 +22,20 @@ class CartProductInfoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-            'printify_product_id' => 'required|string',
-            'printify_variant_id' => 'required',
-            // 'full_mockup' => 'nullable|string',
-            'product_name' => 'required|string',
-            'variant_title' => 'required',
-            'variant_price' => 'required|numeric',
-
-            'front_image'  => 'nullable|string',
-            // 'back_image'  => 'nullable|string',
-
-            'quantity' => 'required|integer',
-
-            'design_id' => 'nullable|integer'
+            'veara_product_id' => ['required', 'integer'],
+            'garment_variant_id' => ['required', 'integer'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            // 'positioning' => ['required', 'array'],
+            // 'positioning.front' => ['nullable', 'array'],
+            // 'positioning.front.x' => ['required_with:positioning.front', 'numeric'],
+            // 'positioning.front.y' => ['required_with:positioning.front', 'numeric'],
+            // 'positioning.front.scale' => ['required_with:positioning.front', 'numeric'],
+            // 'positioning.front.angle' => ['required_with:positioning.front', 'numeric'],
+            // 'positioning.back' => ['nullable', 'array'],
+            // 'positioning.back.x' => ['required_with:positioning.back', 'numeric'],
+            // 'positioning.back.y' => ['required_with:positioning.back', 'numeric'],
+            // 'positioning.back.scale' => ['required_with:positioning.back', 'numeric'],
+            // 'positioning.back.angle' => ['required_with:positioning.back', 'numeric'],
         ];
     }
 }

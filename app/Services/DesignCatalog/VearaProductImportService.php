@@ -2,8 +2,8 @@
 
 namespace App\Services\DesignCatalog;
 
+use App\Models\DesignCatalogProduct;
 use App\Models\DesignLabel;
-use App\Models\VearaProduct;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -61,7 +61,7 @@ class VearaProductImportService
         foreach ($rows as $row) {
             $payload = $this->mapRow($row);
 
-            $product = VearaProduct::updateOrCreate(
+            $product = DesignCatalogProduct::updateOrCreate(
                 ['source_labeled_product_id' => $payload['source_labeled_product_id']],
                 $payload,
             );
@@ -117,7 +117,7 @@ class VearaProductImportService
         ];
     }
 
-    private function syncLabels(VearaProduct $product): int
+    private function syncLabels(DesignCatalogProduct $product): int
     {
         $pairs = collect([
             ['design_type', $product->design_type],
@@ -147,13 +147,13 @@ class VearaProductImportService
         $pairs->push(['design_labels.line_style', Arr::get($designLabels, 'line_style')]);
 
         $labels = $this->findLabels($pairs);
-        DB::table('veara_product_labels')->where('veara_product_id', $product->id)->delete();
+        DB::table('design_catalog_product_labels')->where('design_catalog_product_id', $product->id)->delete();
 
         $now = now();
         foreach ($labels as $label) {
-            DB::table('veara_product_labels')->updateOrInsert(
+            DB::table('design_catalog_product_labels')->updateOrInsert(
                 [
-                    'veara_product_id' => $product->id,
+                    'design_catalog_product_id' => $product->id,
                     'design_label_id' => $label->id,
                 ],
                 [

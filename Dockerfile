@@ -1,29 +1,42 @@
-FROM php:8.3-cli
+FROM php:8.3-fpm-alpine
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git unzip \
-    libpng-dev libjpeg62-turbo-dev libfreetype6-dev libwebp-dev \
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    libpq-dev \
     libzip-dev \
-  && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-  && docker-php-ext-install -j$(nproc) gd pdo_mysql zip \
-  && rm -rf /var/lib/apt/lists/*
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    zip \
+    unzip \
+    curl \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql pgsql zip bcmath opcache gd
 
-
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts --no-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 COPY . .
+RUN composer run-script post-autoload-dump
 
-RUN composer dump-autoload --optimize || true
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache database \
+    && touch database/database.sqlite storage/logs/laravel.log \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 storage bootstrap/cache
 
-RUN mkdir -p storage bootstrap/cache \
-  && chown -R www-data:www-data storage bootstrap/cache
+RUN mkdir -p /run/nginx
 
-ENV PORT=8080
+COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+COPY docker/supervisord.conf /etc/supervisord.conf
+
+RUN php artisan key:generate --force || true
+RUN php artisan config:clear && php artisan route:clear && php artisan view:clear
+
 EXPOSE 8080
 
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT}"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

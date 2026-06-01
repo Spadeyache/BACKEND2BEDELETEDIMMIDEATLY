@@ -14,7 +14,7 @@ return new class extends Migration
     {
         DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
 
-        Schema::create('veara_products', function (Blueprint $table) {
+        Schema::create('design_catalog_products', function (Blueprint $table) {
             $table->id();
             $table->uuid('source_product_id')->nullable()->unique();
             $table->uuid('source_labeled_product_id')->nullable()->unique();
@@ -48,13 +48,13 @@ return new class extends Migration
             $table->string('status')->default('draft');
             $table->timestamps();
 
-            $table->index(['status', 'vectorized']);
-            $table->index(['design_type', 'mood']);
-            $table->index('source_domain');
+            $table->index(['status', 'vectorized'], 'design_catalog_products_status_vectorized_idx');
+            $table->index(['design_type', 'mood'], 'design_catalog_products_design_type_mood_idx');
+            $table->index('source_domain', 'design_catalog_products_source_domain_idx');
         });
 
-        DB::statement('ALTER TABLE veara_products ADD COLUMN embedding vector(160)');
-        DB::statement('CREATE INDEX veara_products_embedding_hnsw_idx ON veara_products USING hnsw (embedding vector_cosine_ops)');
+        DB::statement('ALTER TABLE design_catalog_products ADD COLUMN embedding vector(160)');
+        DB::statement('CREATE INDEX design_catalog_products_embedding_hnsw_idx ON design_catalog_products USING hnsw (embedding vector_cosine_ops)');
     }
 
     /**
@@ -62,6 +62,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('veara_products');
+        Schema::dropIfExists('design_catalog_products');
     }
 };

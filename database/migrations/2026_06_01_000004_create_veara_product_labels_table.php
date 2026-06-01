@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('veara_product_labels', function (Blueprint $table) {
+        Schema::create('design_catalog_product_labels', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('veara_product_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('design_catalog_product_id')->constrained('design_catalog_products')->cascadeOnDelete();
             $table->foreignId('design_label_id')->constrained()->cascadeOnDelete();
             $table->string('group_key');
             $table->string('label_key');
             $table->timestamps();
 
-            $table->unique(['veara_product_id', 'design_label_id']);
+            $table->unique(['design_catalog_product_id', 'design_label_id'], 'design_catalog_product_labels_unique');
             $table->index(['group_key', 'label_key']);
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('veara_product_labels');
+        Schema::dropIfExists('design_catalog_product_labels');
     }
 };
