@@ -192,6 +192,19 @@
             </div>
 
             <div class="menu-item mb-1">
+                <a class="menu-link {{ request()->routeIs('design-catalog.*') ? 'active' : '' }}"
+                    href="{{ route('design-catalog.index') }}">
+                    <span class="menu-icon">
+                        <i class="ki-duotone ki-picture fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                    <span class="menu-title">Design Catalog</span>
+                </a>
+            </div>
+
+            <div class="menu-item mb-1">
                 <a class="menu-link {{ request()->routeIs('contact_us.index') ? 'active' : '' }}"
                     href="{{ route('contact_us.index') }}">
                     <span class="menu-icon">

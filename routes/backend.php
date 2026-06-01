@@ -5,6 +5,7 @@
 use App\Http\Controllers\API\V1\PaymentController;
 use App\Http\Controllers\Web\Backend\ContactUsController;
 use App\Http\Controllers\Web\Backend\DashboardController;
+use App\Http\Controllers\Web\Backend\DesignCatalogController;
 use App\Http\Controllers\Web\Backend\DynamicPageController;
 use App\Http\Controllers\Web\Backend\OrdersController;
 use App\Http\Controllers\Web\Backend\PermissionController;
@@ -89,6 +90,8 @@ Route::prefix('/orders')->controller(OrdersController::class)->group( function (
     Route::get('/{id}', 'details')->name('orders.details');
     Route::get('/{id}/data', 'detailsData')->name('orders.details.data');
 });
+
+Route::get('/design-catalog', [DesignCatalogController::class, 'index'])->name('design-catalog.index');
 
 Route::prefix('/contact-us')->controller(ContactUsController::class)->group( function () {
     Route::get('/', 'index')->name('contact_us.index');

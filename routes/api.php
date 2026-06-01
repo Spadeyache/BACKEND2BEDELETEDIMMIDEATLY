@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Auth\User\SocialAuthController;
 use App\Http\Controllers\API\V1\CartController;
 use App\Http\Controllers\API\V1\ContactUsController;
 use App\Http\Controllers\API\V1\DesignController;
+use App\Http\Controllers\API\V1\DesignCatalogController;
 use App\Http\Controllers\API\V1\PaymentController;
 use App\Http\Controllers\API\V1\ProductController;
 use App\Http\Controllers\API\V1\WebhookController;
@@ -30,6 +31,12 @@ Route::prefix('v1/products')->controller(ProductController::class)->group(functi
 //     Route::get('get-all', 'index');
 //     Route::get('get-one/{id}', 'productDetail');
     Route::get('/catalog-data', 'productTags');
+});
+
+Route::prefix('v1/design-catalog')->controller(DesignCatalogController::class)->group(function () {
+    Route::get('/products', 'products');
+    Route::get('/products/{id}', 'product');
+    Route::get('/labels', 'labels');
 });
 
 Route::post('v1/contact-us', [ContactUsController::class, 'store']);
