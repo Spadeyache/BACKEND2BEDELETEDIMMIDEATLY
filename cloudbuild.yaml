@@ -1,0 +1,36 @@
+substitutions:
+  _REGION: us-east1
+  _SERVICE: veara-backend
+  _IMAGE_BASE: us-east1-docker.pkg.dev/veara-platform/cloud-run-source-deploy/veara-backend
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - "-t"
+      - "${_IMAGE_BASE}:$SHORT_SHA"
+      - "."
+
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - "${_IMAGE_BASE}:$SHORT_SHA"
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - "${_SERVICE}"
+      - "--image"
+      - "${_IMAGE_BASE}:$SHORT_SHA"
+      - "--region"
+      - "${_REGION}"
+      - "--platform"
+      - managed
+
+images:
+  - "${_IMAGE_BASE}:$SHORT_SHA"
