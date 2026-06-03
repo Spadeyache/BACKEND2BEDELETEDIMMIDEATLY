@@ -15,12 +15,19 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
+        $password = env('VEARA_ADMIN_PASSWORD');
+
+        if (blank($password) || strlen($password) < 12) {
+            throw new \RuntimeException('VEARA_ADMIN_PASSWORD must be set to at least 12 characters before seeding the admin user.');
+        }
+
+        User::updateOrCreate([
+            'email' => env('VEARA_ADMIN_EMAIL', 'admin@admin.com'),
+        ], [
             'first_name' => 'admin',
             'last_name'  => 'admin',
-            'email'      => 'admin@admin.com',
             'phone'      => '0123456789',
-            'password'   => Hash::make('12345678'),
+            'password'   => Hash::make($password),
             'role'       => Role::ADMIN->value,
         ]);
     }

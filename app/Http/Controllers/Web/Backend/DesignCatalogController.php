@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Web\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\DesignCatalogProduct;
 use App\Models\DesignLabelGroup;
+use App\Services\DesignCatalog\DesignCatalogAutoImportService;
 use Illuminate\Http\Request;
 
 class DesignCatalogController extends Controller
 {
     public function index(Request $request)
     {
+        app(DesignCatalogAutoImportService::class)->maybeRun();
+
         $status = $request->get('status', 'draft');
 
         $query = DesignCatalogProduct::query()

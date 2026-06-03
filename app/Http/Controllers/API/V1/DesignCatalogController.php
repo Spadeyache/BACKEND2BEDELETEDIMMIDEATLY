@@ -7,6 +7,7 @@ use App\Http\Resources\Api\V1\DesignCatalog\DesignLabelGroupResource;
 use App\Http\Resources\Api\V1\DesignCatalog\VearaProductResource;
 use App\Models\DesignCatalogProduct;
 use App\Models\DesignLabelGroup;
+use App\Services\DesignCatalog\DesignCatalogAutoImportService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,8 @@ class DesignCatalogController extends Controller
     public function products(Request $request)
     {
         try {
+            app(DesignCatalogAutoImportService::class)->maybeRun($request->boolean('auto_import'));
+
             $query = DesignCatalogProduct::query()
                 ->with('labels.group')
                 ->where('status', $request->get('status', 'active'));
@@ -73,6 +76,8 @@ class DesignCatalogController extends Controller
     public function labels()
     {
         try {
+            app(DesignCatalogAutoImportService::class)->maybeRun();
+
             $groups = DesignLabelGroup::with(['labels' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')])
                 ->where('is_active', true)
                 ->orderBy('sort_order')

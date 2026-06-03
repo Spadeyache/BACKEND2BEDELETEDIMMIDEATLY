@@ -10,7 +10,13 @@ use Illuminate\Support\Facades\DB;
 
 class VearaProductImportService
 {
-    public function importFromConnection(string $connection, int $limit = 100, bool $includeUnreviewed = false): array
+    public function importFromConnection(
+        string $connection,
+        int $limit = 100,
+        bool $includeUnreviewed = false,
+        bool $random = false,
+        bool $onlyNew = false,
+    ): array
     {
         $query = DB::connection($connection)
             ->table('ai_labeled_products as alp')
@@ -45,12 +51,25 @@ class VearaProductImportService
                 'sp.back_image_url',
                 'sp.source_domain',
                 'sp.price_range',
-            ])
-            ->orderBy('alp.labeled_at');
+            ]);
 
         if (!$includeUnreviewed) {
             $query->where('alp.proceed_to_vectorizing', true);
         }
+
+        if ($onlyNew) {
+            $importedSourceIds = DesignCatalogProduct::query()
+                ->whereNotNull('source_labeled_product_id')
+                ->pluck('source_labeled_product_id')
+                ->filter()
+                ->values();
+
+            if ($importedSourceIds->isNotEmpty()) {
+                $query->whereNotIn('alp.id', $importedSourceIds);
+            }
+        }
+
+        $random ? $query->inRandomOrder() : $query->orderBy('alp.labeled_at');
 
         $rows = $query->limit($limit)->get();
 
