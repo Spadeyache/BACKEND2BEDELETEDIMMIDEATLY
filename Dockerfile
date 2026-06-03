@@ -33,10 +33,12 @@ RUN mkdir -p /run/nginx
 
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
+COPY docker/render-start.sh /usr/local/bin/render-start
+RUN chmod +x /usr/local/bin/render-start
 
 RUN php artisan key:generate --force || true
 RUN php artisan config:clear && php artisan route:clear && php artisan view:clear
 
 EXPOSE 8080
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["/usr/local/bin/render-start"]
