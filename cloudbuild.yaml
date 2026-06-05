@@ -2,6 +2,9 @@ substitutions:
   _REGION: us-east1
   _SERVICE: veara-backend
   _IMAGE_BASE: us-east1-docker.pkg.dev/veara-platform/cloud-run-source-deploy/veara-backend
+  # Secret Manager secret holding the full production .env file.
+  # Mounted into the container at /var/www/html/.env at runtime.
+  _ENV_SECRET: veara-backend-env
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -31,6 +34,25 @@ steps:
       - "${_REGION}"
       - "--platform"
       - managed
+      # nginx in the container listens on 8080 (docker/nginx.conf).
+      - "--port"
+      - "8080"
+      # Public API + admin login: reachable without IAM auth.
+      - "--allow-unauthenticated"
+      # Laravel + nginx + php-fpm + supervisor; 512Mi/1cpu is comfortable.
+      - "--memory"
+      - "512Mi"
+      - "--cpu"
+      - "1"
+      # Cold start runs migrate --force; give it headroom.
+      - "--timeout"
+      - "300"
+      # Mount the whole production .env from Secret Manager as a file.
+      # All credentials (DB, Supabase, Stripe, Printify, JWT, etc.) live here,
+      # so nothing sensitive is set as a plain Cloud Run env var.
+      - "--set-secrets"
+      - "/var/www/html/.env=${_ENV_SECRET}:latest"
+      - "--quiet"
 
 images:
   - "${_IMAGE_BASE}:$SHORT_SHA"

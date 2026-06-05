@@ -41,4 +41,4 @@ RUN php artisan config:clear && php artisan route:clear && php artisan view:clea
 
 EXPOSE 8080
 
-CMD ["/usr/local/bin/render-start"]
+CMD ["/bin/sh", "/usr/local/bin/render-start"]
