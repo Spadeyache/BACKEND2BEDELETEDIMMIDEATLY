@@ -2,17 +2,21 @@
 
 This backend deploys to **Cloud Run** via a **Cloud Build trigger** that fires on every
 push to the production branch of `github.com/jonathan-veara/veara-backend`. The build is
-defined in [`cloudbuild.yaml`](../cloudbuild.yaml): it builds the Docker image, pushes it
+defined in `[cloudbuild.yaml](../cloudbuild.yaml)`: it builds the Docker image, pushes it
 to Artifact Registry, and deploys it to Cloud Run.
 
 - **Database:** hosted Supabase Postgres (public pooler connection — no VPC/Cloud SQL needed).
 - **Secrets:** the entire production `.env` is stored as a single **Secret Manager** secret
-  (`veara-backend-env`) and mounted into the container as a file at `/var/www/html/.env`.
-  Nothing sensitive is set as a plain Cloud Run env var.
+(`veara-backend-env`) and mounted into the container as a file at `/var/www/html/.env`.
+Nothing sensitive is set as a plain Cloud Run env var.
 
 You run the **one-time setup** below once. After that, `git push` deploys.
 
 ---
+
+
+
+
 
 ## 0. Prerequisites (one time, on your machine)
 
@@ -56,7 +60,7 @@ gcloud artifacts repositories create $REPO \
 ## 3. Build the production `.env` and store it as a secret
 
 Create a local file `prod.env` with the real production values. Start from
-[`docs/supabase-hosted-setup.md`](supabase-hosted-setup.md) and `.env.example`. It must
+`[docs/supabase-hosted-setup.md](supabase-hosted-setup.md)` and `.env.example`. It must
 include **all** of the following (grouped):
 
 ```env
@@ -150,9 +154,7 @@ gcloud secrets versions add $ENV_SECRET --data-file=prod.env
 rm prod.env
 ```
 
-To change any value later: edit `prod.env`, run `gcloud secrets versions add $ENV_SECRET
---data-file=prod.env`, then redeploy (push, or `gcloud run services update $SERVICE
---region=$REGION` to pick up `:latest`).
+To change any value later: edit `prod.env`, run `gcloud secrets versions add $ENV_SECRET --data-file=prod.env`, then redeploy (push, or `gcloud run services update $SERVICE --region=$REGION` to pick up `:latest`).
 
 ## 4. Grant IAM
 
@@ -246,12 +248,11 @@ UI lives at `/admin/dashboard` (login via the `VEARA_ADMIN_*` user synced on boo
 
 ## Notes & gotchas
 
-- **Migrations run on every cold start** (`docker/render-start.sh` → `php artisan migrate
-  --force`). This is fine but means the deploying revision must be able to reach Supabase.
-- **`.env` is read-only at runtime.** The admin Settings screens that rewrite SMTP/Stripe/
-  Printify keys into `.env` (`SettingController`) will fail on Cloud Run — manage those
-  values through the secret instead. (They never persisted on the old Render host either.)
+- **Migrations run on every cold start** (`docker/render-start.sh` → `php artisan migrate --force`). This is fine but means the deploying revision must be able to reach Supabase.
+- `**.env` is read-only at runtime.** The admin Settings screens that rewrite SMTP/Stripe/
+Printify keys into `.env` (`SettingController`) will fail on Cloud Run — manage those
+values through the secret instead. (They never persisted on the old Render host either.)
 - **No VPC connector needed** as long as Supabase is reached over its public pooler
-  hostname. If you later lock Supabase to private networking, add a Serverless VPC connector.
-- **Rollback:** `gcloud run services update-traffic $SERVICE --region=$REGION
-  --to-revisions=<previous-revision>=100`.
+hostname. If you later lock Supabase to private networking, add a Serverless VPC connector.
+- **Rollback:** `gcloud run services update-traffic $SERVICE --region=$REGION --to-revisions=<previous-revision>=100`.
+
