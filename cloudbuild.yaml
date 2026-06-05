@@ -3,7 +3,7 @@ substitutions:
   _SERVICE: veara-backend
   _IMAGE_BASE: us-east1-docker.pkg.dev/project-4e3ae124-305e-478e-be4/cloud-run-source-deploy/veara-backend
   # Secret Manager secret holding the full production .env file.
-  # Mounted into the container at /var/www/html/.env at runtime.
+  # Mounted into the container outside the app directory at runtime.
   _ENV_SECRET: veara-backend-env
 
 options:
@@ -50,8 +50,10 @@ steps:
       # Mount the whole production .env from Secret Manager as a file.
       # All credentials (DB, Supabase, Stripe, Printify, JWT, etc.) live here,
       # so nothing sensitive is set as a plain Cloud Run env var.
+      # Do not mount inside /var/www/html: Cloud Run secret volumes can shadow
+      # the app directory. docker/render-start.sh copies this into place.
       - "--set-secrets"
-      - "/var/www/html/.env=${_ENV_SECRET}:latest"
+      - "/var/secrets/veara/.env=${_ENV_SECRET}:latest"
       - "--quiet"
 
 images:

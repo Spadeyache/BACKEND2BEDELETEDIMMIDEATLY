@@ -7,8 +7,8 @@ to Artifact Registry, and deploys it to Cloud Run.
 
 - **Database:** hosted Supabase Postgres (public pooler connection — no VPC/Cloud SQL needed).
 - **Secrets:** the entire production `.env` is stored as a single **Secret Manager** secret
-(`veara-backend-env`) and mounted into the container as a file at `/var/www/html/.env`.
-Nothing sensitive is set as a plain Cloud Run env var.
+(`veara-backend-env`), mounted at `/var/secrets/veara/.env`, then copied into
+`/var/www/html/.env` during container startup. Nothing sensitive is set as a plain Cloud Run env var.
 
 You run the **one-time setup** below once. After that, `git push` deploys.
 
@@ -249,10 +249,9 @@ UI lives at `/admin/dashboard` (login via the `VEARA_ADMIN_*` user synced on boo
 ## Notes & gotchas
 
 - **Migrations run on every cold start** (`docker/render-start.sh` → `php artisan migrate --force`). This is fine but means the deploying revision must be able to reach Supabase.
-- `**.env` is read-only at runtime.** The admin Settings screens that rewrite SMTP/Stripe/
+- **`.env` starts from Secret Manager at runtime.** The admin Settings screens that rewrite SMTP/Stripe/
 Printify keys into `.env` (`SettingController`) will fail on Cloud Run — manage those
 values through the secret instead. (They never persisted on the old Render host either.)
 - **No VPC connector needed** as long as Supabase is reached over its public pooler
 hostname. If you later lock Supabase to private networking, add a Serverless VPC connector.
 - **Rollback:** `gcloud run services update-traffic $SERVICE --region=$REGION --to-revisions=<previous-revision>=100`.
-
