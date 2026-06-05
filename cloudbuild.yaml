@@ -1,7 +1,7 @@
 substitutions:
   _REGION: us-east1
   _SERVICE: veara-backend
-  _IMAGE_BASE: us-east1-docker.pkg.dev/veara-platform/cloud-run-source-deploy/veara-backend
+  _IMAGE_BASE: us-east1-docker.pkg.dev/project-4e3ae124-305e-478e-be4/cloud-run-source-deploy/veara-backend
   # Secret Manager secret holding the full production .env file.
   # Mounted into the container at /var/www/html/.env at runtime.
   _ENV_SECRET: veara-backend-env

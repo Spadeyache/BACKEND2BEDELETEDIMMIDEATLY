@@ -19,11 +19,11 @@ You run the **one-time setup** below once. After that, `git push` deploys.
 ```bash
 # Install the Google Cloud SDK if you don't have it: https://cloud.google.com/sdk/docs/install
 gcloud auth login
-gcloud config set project veara-platform
+gcloud config set project project-4e3ae124-305e-478e-be4
 gcloud config set run/region us-east1
 
 # Handy variables used throughout this doc:
-export PROJECT_ID=veara-platform
+export PROJECT_ID=project-4e3ae124-305e-478e-be4
 export REGION=us-east1
 export SERVICE=veara-backend
 export REPO=cloud-run-source-deploy
@@ -43,7 +43,7 @@ gcloud services enable \
 
 ## 2. Create the Artifact Registry repo
 
-`cloudbuild.yaml` pushes to `us-east1-docker.pkg.dev/veara-platform/cloud-run-source-deploy/...`,
+`cloudbuild.yaml` pushes to `us-east1-docker.pkg.dev/project-4e3ae124-305e-478e-be4/cloud-run-source-deploy/...`,
 so the repo must exist with that exact name:
 
 ```bash
